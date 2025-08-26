@@ -36,10 +36,15 @@ app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
 # GROK client exactly as per X.AI documentation
+import httpx
+
+# GROK client (fixed for new openai SDK)
 client = OpenAI(
     api_key=os.getenv("GROK_API_KEY"),
-    base_url="https://api.x.ai/v1"
+    base_url="https://api.x.ai/v1",
+    http_client=httpx.Client(follow_redirects=True)  # prevents proxies error
 )
+
 
 # Session timeout configuration (prevents long-running sessions)
 @app.before_request
@@ -215,3 +220,4 @@ if __name__ == '__main__':
     print("🌐 Open browser to: http://localhost:5000")
     
     app.run(debug=True, port=5000)
+
